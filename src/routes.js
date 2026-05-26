@@ -3,6 +3,7 @@ const contactRoutes = require('@routes/contactRoutes');
 const blogRoutes = require('@routes/blogRoutes');
 const galleryRoutes = require('@routes/galleryRoutes');
 const projectRoutes = require('@routes/projectRoutes');
+const dashboardRoutes = require('@routes/dashboardRoutes');
 
 module.exports = (app) => {
   app.use('/auth', authRoutes);
@@ -10,4 +11,5 @@ module.exports = (app) => {
   app.use('/blogs', blogRoutes);
   app.use('/gallery', galleryRoutes);
   app.use('/projects', projectRoutes);
+  app.use('/dashboard', dashboardRoutes);
 };
