@@ -1,0 +1,18 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@routes/*": ["src/routes/*"],
+      "@controllers/*": ["src/controllers/*"],
+      "@models/*": ["src/models/*"],
+      "@middlewares/*": ["src/middlewares/*"],
+      "@services/*": ["src/services/*"],
+      "@config/*": ["src/config/*"],
+      "@responses": ["src/responses/index.js"],
+      "@responses/*": ["src/responses/*"],
+      "@helper/*": ["src/helper/*"]
+    }
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules"]
+}
