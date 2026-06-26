@@ -4,8 +4,13 @@
   "description": "Lotus Backend API",
   "main": "src/server.js",
   "scripts": {
-    "start": "node src/server.js",
-    "dev": "nodemon src/server.js"
+    "dev": "node server.js",
+    "start": "pm2 start src/server.js -i max -f",
+    "kill": "pm2 kill",
+    "logs": "pm2 log",
+    "restart": "pm2 restart all",
+    "start:dev": "nodemon src/.js",
+    "test": "set NODE_ENV=test&&mocha --timeout 15000 --colors --verbose -- __tests__/**/*.js"
   },
   "author": "",
   "license": "ISC",
