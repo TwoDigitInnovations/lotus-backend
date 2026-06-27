@@ -15,5 +15,8 @@ router.put('/testimonials', auth('admin'), upload.any(), ctrl.updateTestimonials
 router.put('/footer', auth('admin'), ctrl.updateFooter);
 router.put('/privacy-policy', auth('admin'), ctrl.updatePrivacyPolicy);
 router.put('/terms', auth('admin'), ctrl.updateTerms);
+router.put('/general', auth('admin'), upload.single('logo'), ctrl.updateGeneral);
+router.put('/section-headings', auth('admin'), ctrl.updateSectionHeadings);
+router.put('/page-banners', auth('admin'), upload.any(), ctrl.updatePageBanners);
 
 module.exports = router;

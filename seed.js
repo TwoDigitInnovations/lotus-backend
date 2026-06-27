@@ -6,6 +6,7 @@ const Blog = require('./src/models/Blog');
 const Project = require('./src/models/Project');
 const Gallery = require('./src/models/Gallery');
 const PropertyType = require('./src/models/PropertyType');
+const HeroBanner = require('./src/models/HeroBanner');
 
 // ─── Images (picsum seeds for consistent previews) ────────────────────────────
 const img = (seed, w = 800, h = 560) => `https://picsum.photos/seed/${seed}/${w}/${h}`;
@@ -1041,6 +1042,42 @@ const GALLERY = [
   },
 ];
 
+// ─── Hero Banners ─────────────────────────────────────────────────────────────
+const hero = (seed) => `https://picsum.photos/seed/${seed}/1920/1080`;
+
+const HERO_BANNERS = [
+  {
+    type: 'image',
+    media: hero('lotus-hero-1'),
+    title: 'Luxury Living Redefined',
+    subtitle: 'Find Your Dream Properties',
+    ctaText: 'Explore Projects',
+    ctaLink: '/projects',
+    order: 1,
+    isActive: true,
+  },
+  {
+    type: 'image',
+    media: hero('lotus-hero-2'),
+    title: 'Your Dream Home Awaits',
+    subtitle: 'Premium Real Estate in Noida',
+    ctaText: 'View Properties',
+    ctaLink: '/projects',
+    order: 2,
+    isActive: true,
+  },
+  {
+    type: 'image',
+    media: hero('lotus-hero-3'),
+    title: 'Smart Properties For Smart People',
+    subtitle: 'Invest In The Future',
+    ctaText: 'Contact Us',
+    ctaLink: '/contact',
+    order: 3,
+    isActive: true,
+  },
+];
+
 // ─── Property Types ───────────────────────────────────────────────────────────
 const PROPERTY_TYPES = [
   { label: 'COMMERCIAL',   image: img('pt-commercial', 900, 600),  order: 1, isActive: true },
@@ -1059,7 +1096,8 @@ async function seed() {
     await Blog.deleteMany({});
     await Gallery.deleteMany({});
     await PropertyType.deleteMany({});
-    console.log('🗑️  Cleared existing projects, blogs, gallery and property types');
+    await HeroBanner.deleteMany({});
+    console.log('🗑️  Cleared existing projects, blogs, gallery, property types and hero banners');
 
     // Insert projects
     const projects = await Project.insertMany(PROJECTS);
@@ -1079,11 +1117,16 @@ async function seed() {
     const propertyTypes = await PropertyType.insertMany(PROPERTY_TYPES);
     console.log(`✅ Inserted ${propertyTypes.length} property types`);
 
+    // Insert hero banners
+    const heroBanners = await HeroBanner.insertMany(HERO_BANNERS);
+    console.log(`✅ Inserted ${heroBanners.length} hero banners`);
+
     console.log('\n🎉 Seed complete!');
     console.log(`   Projects:       ${projects.length}`);
     console.log(`   Blogs:          ${blogs.length}`);
     console.log(`   Gallery:        ${photos} photos + ${videos} videos`);
     console.log(`   Property Types: ${propertyTypes.length}`);
+    console.log(`   Hero Banners:   ${heroBanners.length}`);
   } catch (err) {
     console.error('❌ Seed failed:', err.message);
   } finally {

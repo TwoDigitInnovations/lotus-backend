@@ -35,8 +35,11 @@ const siteSettingsSchema = new mongoose.Schema(
     footer: {
       description: { type: String, default: '' },
       phone: { type: String, default: '' },
+      altPhone: { type: String, default: '' },
       email: { type: String, default: '' },
+      website: { type: String, default: '' },
       address: { type: String, default: '' },
+      addressLine2: { type: String, default: '' },
       whatsapp: { type: String, default: '' },
       socialLinks: {
         instagram: { type: String, default: '' },
@@ -47,6 +50,29 @@ const siteSettingsSchema = new mongoose.Schema(
     // Legal pages
     privacyPolicy: { type: String, default: '', maxlength: 200000 },
     termsOfService: { type: String, default: '', maxlength: 200000 },
+    // Site logo
+    logo: { type: String, default: '' },
+    // Company stats shown on project detail page
+    stats: [{ value: { type: String }, label: { type: String } }],
+    // Hero images for inner pages
+    pageBanners: {
+      projects: { type: String, default: '' },
+      blog: { type: String, default: '' },
+      gallery: { type: String, default: '' },
+      contact: { type: String, default: '' },
+      privacyPolicy: { type: String, default: '' },
+      termsOfService: { type: String, default: '' },
+    },
+    // Contact section right-side image (home page)
+    contactSectionImage: { type: String, default: '' },
+    // Section headings on home page
+    sectionHeadings: {
+      ourProjects: { type: String, default: 'Our Projects' },
+      recentBlogs: { type: String, default: 'Recent Blogs' },
+      gallery: { type: String, default: 'Gallery' },
+      contactSection: { type: String, default: 'Partner With Us' },
+      leaders: { type: String, default: 'Our Leaders' },
+    },
   },
   { timestamps: true },
 );

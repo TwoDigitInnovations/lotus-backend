@@ -92,13 +92,16 @@ module.exports = {
   // Admin: update footer
   updateFooter: async (req, res) => {
     try {
-      const { description, phone, email, address, whatsapp, socialLinks } = req.body;
+      const { description, phone, altPhone, email, website, address, addressLine2, whatsapp, socialLinks } = req.body;
       const settings = await getSingleton();
 
       if (description !== undefined) settings.footer.description = description;
       if (phone !== undefined) settings.footer.phone = phone;
+      if (altPhone !== undefined) settings.footer.altPhone = altPhone;
       if (email !== undefined) settings.footer.email = email;
+      if (website !== undefined) settings.footer.website = website;
       if (address !== undefined) settings.footer.address = address;
+      if (addressLine2 !== undefined) settings.footer.addressLine2 = addressLine2;
       if (whatsapp !== undefined) settings.footer.whatsapp = whatsapp;
       if (socialLinks !== undefined) {
         const links = typeof socialLinks === 'string' ? JSON.parse(socialLinks) : socialLinks;
@@ -133,6 +136,80 @@ module.exports = {
       settings.termsOfService = content || '';
       await settings.save();
       return response.ok(res, { message: 'Terms of service updated', data: { termsOfService: settings.termsOfService } });
+    } catch (error) {
+      return response.error(res, error);
+    }
+  },
+
+  // Admin: update general settings (logo, stats, contactSectionImage)
+  updateGeneral: async (req, res) => {
+    try {
+      const { stats, contactSectionImage, logoUrl } = req.body;
+      const settings = await getSingleton();
+
+      if (req.file) {
+        settings.logo = req.file.path;
+      } else if (logoUrl !== undefined) {
+        settings.logo = logoUrl;
+      }
+
+      if (stats !== undefined) {
+        settings.stats = typeof stats === 'string' ? JSON.parse(stats) : stats;
+      }
+
+      if (req.body.contactSectionImageUrl !== undefined) {
+        settings.contactSectionImage = req.body.contactSectionImageUrl;
+      } else if (req.files) {
+        const csImg = req.files.find((f) => f.fieldname === 'contactSectionImage');
+        if (csImg) settings.contactSectionImage = csImg.path;
+      } else if (contactSectionImage !== undefined) {
+        settings.contactSectionImage = contactSectionImage;
+      }
+
+      await settings.save();
+      return response.ok(res, { message: 'General settings updated', data: { logo: settings.logo, stats: settings.stats, contactSectionImage: settings.contactSectionImage } });
+    } catch (error) {
+      return response.error(res, error);
+    }
+  },
+
+  // Admin: update section headings
+  updateSectionHeadings: async (req, res) => {
+    try {
+      const { ourProjects, recentBlogs, gallery, contactSection, leaders } = req.body;
+      const settings = await getSingleton();
+
+      if (ourProjects !== undefined) settings.sectionHeadings.ourProjects = ourProjects;
+      if (recentBlogs !== undefined) settings.sectionHeadings.recentBlogs = recentBlogs;
+      if (gallery !== undefined) settings.sectionHeadings.gallery = gallery;
+      if (contactSection !== undefined) settings.sectionHeadings.contactSection = contactSection;
+      if (leaders !== undefined) settings.sectionHeadings.leaders = leaders;
+
+      await settings.save();
+      return response.ok(res, { message: 'Section headings updated', data: settings.sectionHeadings });
+    } catch (error) {
+      return response.error(res, error);
+    }
+  },
+
+  // Admin: update page banners
+  updatePageBanners: async (req, res) => {
+    try {
+      const settings = await getSingleton();
+      const pages = ['projects', 'blog', 'gallery', 'contact', 'privacyPolicy', 'termsOfService'];
+
+      pages.forEach((page) => {
+        if (req.body[page] !== undefined) settings.pageBanners[page] = req.body[page];
+      });
+
+      if (req.files && req.files.length > 0) {
+        req.files.forEach((f) => {
+          if (pages.includes(f.fieldname)) settings.pageBanners[f.fieldname] = f.path;
+        });
+      }
+
+      await settings.save();
+      return response.ok(res, { message: 'Page banners updated', data: settings.pageBanners });
     } catch (error) {
       return response.error(res, error);
     }
