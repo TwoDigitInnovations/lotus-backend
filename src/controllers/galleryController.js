@@ -10,7 +10,9 @@ module.exports = {
       const filter = { isActive: true };
       if (type) filter.type = type;
 
-      const items = await Gallery.find(filter).sort('order -createdAt');
+      let { limit = 200 } = req.query;
+      limit = Math.min(parseInt(limit) || 200, 500);
+      const items = await Gallery.find(filter).sort('order -createdAt').limit(limit);
       return response.ok(res, { data: items });
     } catch (error) {
       return response.error(res, error);

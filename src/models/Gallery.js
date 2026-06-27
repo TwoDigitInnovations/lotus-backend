@@ -3,8 +3,8 @@ const mongoose = require('mongoose');
 
 const gallerySchema = new mongoose.Schema(
   {
-    name: { type: String, required: true, trim: true },
-    location: { type: String, trim: true },
+    name: { type: String, required: true, trim: true, maxlength: 200 },
+    location: { type: String, trim: true, maxlength: 200 },
     type: { type: String, enum: ['photo', 'video'], required: true },
     image: { type: String },
     videoUrl: { type: String },
@@ -13,5 +13,7 @@ const gallerySchema = new mongoose.Schema(
   },
   { timestamps: true },
 );
+
+gallerySchema.index({ isActive: 1, order: 1 });
 
 module.exports = mongoose.model('Gallery', gallerySchema);

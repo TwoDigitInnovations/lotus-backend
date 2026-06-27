@@ -1,7 +1,7 @@
 'use strict';
 const Blog = require('@models/Blog');
 const response = require('@responses');
-const { upload } = require('@services/fileUpload');
+// fileUpload used via multer middleware in routes, not directly here
 
 module.exports = {
   // Public: get all published blogs
@@ -12,7 +12,10 @@ module.exports = {
       limit = parseInt(limit);
 
       const filter = { isPublished: true };
-      if (search) filter.title = { $regex: search, $options: 'i' };
+      if (search) {
+        const escaped = search.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        filter.title = { $regex: escaped, $options: 'i' };
+      }
 
       const [blogs, total] = await Promise.all([
         Blog.find(filter).sort('-publishedAt').skip((page - 1) * limit).limit(limit),

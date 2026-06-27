@@ -4,7 +4,7 @@ const response = require('@responses');
 
 module.exports = {
   // Public: get all active banners ordered
-  getAll: async (req, res) => {
+  getAll: async (_req, res) => {
     try {
       const banners = await HeroBanner.find({ isActive: true }).sort('order');
       return response.ok(res, { data: banners });
@@ -14,7 +14,7 @@ module.exports = {
   },
 
   // Admin: get all banners
-  adminGetAll: async (req, res) => {
+  adminGetAll: async (_req, res) => {
     try {
       const banners = await HeroBanner.find().sort('order');
       return response.ok(res, { data: banners });
@@ -26,12 +26,12 @@ module.exports = {
   // Admin: create banner
   create: async (req, res) => {
     try {
-      const { type, title, subtitle, ctaText, ctaLink, order, isActive } = req.body;
-      if (!req.file) return response.badReq(res, { message: 'Media file is required' });
+      const { type, title, subtitle, ctaText, ctaLink, order, isActive, mediaUrl } = req.body;
+      if (!req.file && !mediaUrl) return response.badReq(res, { message: 'Media file or URL is required' });
 
       const banner = await HeroBanner.create({
         type: type || 'image',
-        media: req.file.path,
+        media: req.file ? req.file.path : mediaUrl,
         title,
         subtitle,
         ctaText,

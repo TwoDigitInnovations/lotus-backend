@@ -3,6 +3,7 @@ const cors = require("cors");
 const helmet = require("helmet");
 const morgan = require("morgan");
 const passport = require("passport");
+const rateLimit = require("express-rate-limit");
 const connectDB = require("@config/db");
 
 // Load environment variables
@@ -17,11 +18,29 @@ const app = express();
 // Connect to Database
 connectDB();
 
+// Rate limiting — 200 req / 15 min per IP on public API; stricter on auth routes
+const publicLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 200,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { message: "Too many requests, please try again later." },
+});
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 20,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { message: "Too many login attempts, please try again later." },
+});
+
 // Middleware
-app.use(express.json());
+app.use(express.json({ limit: "2mb" }));
 app.use(cors());
 app.use(helmet());
 app.use(morgan("dev"));
+app.use(publicLimiter);       // applies to all routes
+app.use("/auth/", authLimiter); // stricter limit on login/register
 
 // Initialize Passport
 app.use(passport.initialize());

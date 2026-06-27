@@ -45,8 +45,8 @@ const siteSettingsSchema = new mongoose.Schema(
       },
     },
     // Legal pages
-    privacyPolicy: { type: String, default: '' },
-    termsOfService: { type: String, default: '' },
+    privacyPolicy: { type: String, default: '', maxlength: 200000 },
+    termsOfService: { type: String, default: '', maxlength: 200000 },
   },
   { timestamps: true },
 );

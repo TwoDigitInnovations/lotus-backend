@@ -7,6 +7,7 @@ const dashboardRoutes = require('@routes/dashboardRoutes');
 const heroBannerRoutes = require('@routes/heroBannerRoutes');
 const siteSettingsRoutes = require('@routes/siteSettingsRoutes');
 const aboutPageRoutes = require('@routes/aboutPageRoutes');
+const propertyTypeRoutes = require('@routes/propertyTypeRoutes');
 
 module.exports = (app) => {
   app.use('/auth', authRoutes);
@@ -18,4 +19,5 @@ module.exports = (app) => {
   app.use('/hero-banners', heroBannerRoutes);
   app.use('/site-settings', siteSettingsRoutes);
   app.use('/about-page', aboutPageRoutes);
+  app.use('/property-types', propertyTypeRoutes);
 };

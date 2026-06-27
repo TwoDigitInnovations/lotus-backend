@@ -1,7 +1,7 @@
 'use strict';
 const SiteSettings = require('@models/SiteSettings');
 const response = require('@responses');
-const { cloudinary } = require('@services/fileUpload');
+// fileUpload imported only for multer middleware; not used directly here
 
 const getSingleton = async () => {
   let settings = await SiteSettings.findOne();
@@ -11,7 +11,7 @@ const getSingleton = async () => {
 
 module.exports = {
   // Public: get all site settings
-  get: async (req, res) => {
+  get: async (_req, res) => {
     try {
       const settings = await getSingleton();
       return response.ok(res, { data: settings });
@@ -31,8 +31,10 @@ module.exports = {
       if (description !== undefined) settings.welcome.description = description;
 
       if (req.files && req.files.length > 0) {
-        const newImages = req.files.map((f) => f.path);
-        settings.welcome.images = newImages;
+        settings.welcome.images = req.files.map((f) => f.path);
+      } else if (req.body.imageUrls) {
+        const urls = typeof req.body.imageUrls === 'string' ? JSON.parse(req.body.imageUrls) : req.body.imageUrls;
+        if (Array.isArray(urls) && urls.length > 0) settings.welcome.images = urls;
       }
 
       await settings.save();

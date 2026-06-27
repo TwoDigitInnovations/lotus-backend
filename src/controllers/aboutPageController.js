@@ -10,7 +10,7 @@ const getSingleton = async () => {
 
 module.exports = {
   // Public: get about page data
-  get: async (req, res) => {
+  get: async (_req, res) => {
     try {
       const about = await getSingleton();
       return response.ok(res, { data: about });
@@ -47,6 +47,7 @@ module.exports = {
         about.story.highlights = typeof highlights === 'string' ? JSON.parse(highlights) : highlights;
       }
       if (req.file) about.story.image = req.file.path;
+      else if (req.body.imageUrl) about.story.image = req.body.imageUrl;
 
       await about.save();
       return response.ok(res, { message: 'Story section updated', data: about.story });
