@@ -33,6 +33,17 @@ module.exports = {
     }
   },
 
+  // Admin: get single project by id (includes inactive)
+  adminGetById: async (req, res) => {
+    try {
+      const project = await Project.findById(req.params.id);
+      if (!project) return response.notFound(res, { message: 'Project not found' });
+      return response.ok(res, { data: project });
+    } catch (error) {
+      return response.error(res, error);
+    }
+  },
+
   // Admin: get all projects including inactive
   adminGetAll: async (req, res) => {
     try {
