@@ -56,8 +56,10 @@ app.get("/", (req, res) => {
 
 // Global Error Handler
 app.use((err, req, res, next) => {
-  console.error(req);
-  res.status(500).json({ error: "Something went wrong!" });
+  console.error(err);
+  const status = err.status || err.statusCode || 500;
+  const message = err.message || "Something went wrong.";
+  res.status(status).json({ status: false, message });
 });
 
 module.exports = app;
