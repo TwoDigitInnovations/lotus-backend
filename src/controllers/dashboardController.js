@@ -43,7 +43,7 @@ module.exports = {
         Project.countDocuments({ isFeatured: true }),
         Project.countDocuments({ category: 'residential' }),
         Project.countDocuments({ status: 'Under Construction' }),
-        Contact.find().sort('-createdAt').limit(6).select('name phone subject status createdAt'),
+        Contact.find().sort('-createdAt').limit(6).select('name email phone subject status createdAt'),
         Blog.find().sort('-createdAt').limit(5).select('title slug isPublished publishedAt createdAt image'),
         Project.find().sort('-createdAt').limit(4).select('name location category status image isFeatured isActive'),
       ]);
