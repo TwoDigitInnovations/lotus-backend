@@ -2,6 +2,46 @@
 const Project = require('@models/Project');
 const response = require('@responses');
 
+function slugify(str) {
+  return (
+    (str || '')
+      .toLowerCase()
+      .trim()
+      .replace(/[^a-z\s-]/g, '')
+      .replace(/\s+/g, '-')
+      .replace(/-+/g, '-')
+      .replace(/^-|-$/g, '') || 'item'
+  );
+}
+
+// Maps uploaded files (fieldnames like `galleryPhoto_0`, `galleryVideoThumb_1`) onto the
+// parsed gallery JSON by array index, and fills in a slug for any item missing one.
+function resolveGallery(gallery, files) {
+  if (!gallery) return gallery;
+
+  const photoFiles = {};
+  const videoThumbFiles = {};
+  (files || []).forEach((f) => {
+    const photoMatch = f.fieldname.match(/^galleryPhoto_(\d+)$/);
+    if (photoMatch) photoFiles[photoMatch[1]] = f.path;
+    const thumbMatch = f.fieldname.match(/^galleryVideoThumb_(\d+)$/);
+    if (thumbMatch) videoThumbFiles[thumbMatch[1]] = f.path;
+  });
+
+  return {
+    photos: (gallery.photos || []).map((p, i) => ({
+      ...p,
+      image: photoFiles[i] || p.image,
+      slug: p.slug || slugify(p.name),
+    })),
+    videos: (gallery.videos || []).map((v, i) => ({
+      ...v,
+      thumbnail: videoThumbFiles[i] || v.thumbnail,
+      slug: v.slug || slugify(v.name),
+    })),
+  };
+}
+
 module.exports = {
   // Public: get all active projects
   getAll: async (req, res) => {
@@ -87,12 +127,15 @@ module.exports = {
         return response.badReq(res, { message: 'Name, location and category are required' });
       }
 
+      const coverFile = (req.files || []).find((f) => f.fieldname === 'image');
+      const parsedGallery = gallery ? (typeof gallery === 'string' ? JSON.parse(gallery) : gallery) : { photos: [], videos: [] };
+
       const project = await Project.create({
         name, location, propertySize, price, status, category,
-        image: req.file ? req.file.path : undefined,
+        image: coverFile ? coverFile.path : undefined,
         overview,
         documents: documents ? (typeof documents === 'string' ? JSON.parse(documents) : documents) : [],
-        gallery: gallery ? (typeof gallery === 'string' ? JSON.parse(gallery) : gallery) : { photos: [], videos: [] },
+        gallery: resolveGallery(parsedGallery, req.files),
         aboutCity: aboutCity ? (typeof aboutCity === 'string' ? JSON.parse(aboutCity) : aboutCity) : {},
         aboutSector: aboutSector ? (typeof aboutSector === 'string' ? JSON.parse(aboutSector) : aboutSector) : {},
         reraNumber, reraUrl,
@@ -115,6 +158,8 @@ module.exports = {
         reraNumber, reraUrl, isFeatured, isActive,
       } = req.body;
 
+      const coverFile = (req.files || []).find((f) => f.fieldname === 'image');
+
       const update = {};
       if (name) update.name = name;
       if (location) update.location = location;
@@ -122,10 +167,13 @@ module.exports = {
       if (price !== undefined) update.price = price;
       if (status) update.status = status;
       if (category) update.category = category;
-      if (req.file) update.image = req.file.path;
+      if (coverFile) update.image = coverFile.path;
       if (overview !== undefined) update.overview = overview;
       if (documents !== undefined) update.documents = typeof documents === 'string' ? JSON.parse(documents) : documents;
-      if (gallery !== undefined) update.gallery = typeof gallery === 'string' ? JSON.parse(gallery) : gallery;
+      if (gallery !== undefined) {
+        const parsedGallery = typeof gallery === 'string' ? JSON.parse(gallery) : gallery;
+        update.gallery = resolveGallery(parsedGallery, req.files);
+      }
       if (aboutCity !== undefined) update.aboutCity = typeof aboutCity === 'string' ? JSON.parse(aboutCity) : aboutCity;
       if (aboutSector !== undefined) update.aboutSector = typeof aboutSector === 'string' ? JSON.parse(aboutSector) : aboutSector;
       if (reraNumber !== undefined) update.reraNumber = reraNumber;

@@ -6,15 +6,22 @@ const documentSchema = new mongoose.Schema(
   { _id: false },
 );
 
-const photoSchema = new mongoose.Schema(
-  { name: String, location: String, image: String },
-  { _id: false },
-);
+const photoSchema = new mongoose.Schema({
+  name: String,
+  description: String,
+  slug: String,
+  location: String,
+  image: String,
+});
 
-const videoSchema = new mongoose.Schema(
-  { name: String, location: String, thumbnail: String, videoUrl: String },
-  { _id: false },
-);
+const videoSchema = new mongoose.Schema({
+  name: String,
+  description: String,
+  slug: String,
+  location: String,
+  thumbnail: String,
+  videoUrl: String,
+});
 
 const projectSchema = new mongoose.Schema(
   {

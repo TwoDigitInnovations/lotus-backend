@@ -12,8 +12,8 @@ router.get('/:id', getById);
 // Admin
 router.get('/admin/all', auth('admin'), adminGetAll);
 router.get('/admin/:id', auth('admin'), adminGetById);
-router.post('/', auth('admin'), upload.single('image'), create);
-router.put('/:id', auth('admin'), upload.single('image'), update);
+router.post('/', auth('admin'), upload.any(), create);
+router.put('/:id', auth('admin'), upload.any(), update);
 router.delete('/:id', auth('admin'), remove);
 
 module.exports = router;

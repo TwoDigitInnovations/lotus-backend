@@ -6,13 +6,17 @@ module.exports = {
   // Public: submit contact form
   submit: async (req, res) => {
     try {
-      const { name, email, phone, subject, message } = req.body;
+      const { name, email, phone, enquiryType, subject, message } = req.body;
       if (!name || !phone || !email) return response.badReq(res, { message: 'Name, email and phone are required' });
 
       const emailRe = /^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}$/;
       if (!emailRe.test(email)) return response.badReq(res, { message: 'Invalid email address' });
 
-      const contact = await Contact.create({ name, email, phone, subject, message });
+      if (enquiryType && !['Partner Enquiry', 'General/Sales Enquiry'].includes(enquiryType)) {
+        return response.badReq(res, { message: 'Invalid enquiry type' });
+      }
+
+      const contact = await Contact.create({ name, email, phone, enquiryType, subject, message });
       return response.created(res, { message: 'Message submitted successfully', data: contact });
     } catch (error) {
       return response.error(res, error);

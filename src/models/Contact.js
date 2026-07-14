@@ -13,6 +13,12 @@ const contactSchema = new mongoose.Schema(
       match: [/^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}$/, 'Invalid email'],
     },
     phone: { type: String, required: true, trim: true, maxlength: 20 },
+    enquiryType: {
+      type: String,
+      enum: ['Partner Enquiry', 'General/Sales Enquiry'],
+      default: 'General/Sales Enquiry',
+      required: true,
+    },
     subject: { type: String, trim: true, maxlength: 200 },
     message: { type: String, trim: true, maxlength: 2000 },
     status: { type: String, enum: ['new', 'read', 'replied'], default: 'new' },
