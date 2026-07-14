@@ -9,6 +9,8 @@ const siteSettingsSchema = new mongoose.Schema(
       subheading: { type: String, default: '' },
       description: { type: String, default: '' },
       images: { type: [String], default: [] },
+      metaTitle: { type: String, default: 'Luxury Properties in Noida' },
+      metaDescription: { type: String, default: 'Explore premium residential and commercial real estate projects by Lotusss in Noida. Luxury apartments, villas, plots and office spaces on the Noida Expressway.' },
     },
     // Why Choose Us section
     whyChooseUs: {
@@ -41,10 +43,13 @@ const siteSettingsSchema = new mongoose.Schema(
       address: { type: String, default: '' },
       addressLine2: { type: String, default: '' },
       whatsapp: { type: String, default: '' },
+      mapEmbed: { type: String, default: '' },
       socialLinks: {
         instagram: { type: String, default: '' },
         facebook: { type: String, default: '' },
         twitter: { type: String, default: '' },
+        linkedin: { type: String, default: '' },
+        youtube: { type: String, default: '' },
       },
     },
     // Legal pages

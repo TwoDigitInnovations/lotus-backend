@@ -59,14 +59,14 @@ module.exports = {
     try {
       const { name, location, type, videoUrl, order, isActive } = req.body;
       if (!name || !type) return response.badReq(res, { message: 'Name and type are required' });
-      if (type === 'video' && !videoUrl) return response.badReq(res, { message: 'videoUrl is required for video type' });
+      if (type === 'video' && !videoUrl && !req.file) return response.badReq(res, { message: 'videoUrl or video file is required for video type' });
 
       const item = await Gallery.create({
         name,
         location,
         type,
-        image: req.file ? req.file.path : undefined,
-        videoUrl: type === 'video' ? videoUrl : undefined,
+        image: type === 'photo' && req.file ? req.file.path : undefined,
+        videoUrl: type === 'video' ? (req.file ? req.file.path : videoUrl) : undefined,
         order: order ? parseInt(order) : 0,
         isActive: isActive !== 'false' && isActive !== false,
       });
@@ -83,10 +83,21 @@ module.exports = {
       const { name, location, type, videoUrl, order, isActive } = req.body;
       const update = {};
 
+      const itemToUpdate = await Gallery.findById(req.params.id);
+      if (!itemToUpdate) return response.notFound(res, { message: 'Gallery item not found' });
+
       if (name) update.name = name;
       if (location !== undefined) update.location = location;
       if (type) update.type = type;
-      if (req.file) update.image = req.file.path;
+      
+      const currentType = type || itemToUpdate.type;
+      if (req.file) {
+        if (currentType === 'video') {
+          update.videoUrl = req.file.path;
+        } else {
+          update.image = req.file.path;
+        }
+      }
       if (videoUrl !== undefined) update.videoUrl = videoUrl;
       if (order !== undefined) update.order = parseInt(order);
       if (isActive !== undefined) update.isActive = isActive !== 'false' && isActive !== false;

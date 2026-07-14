@@ -8,16 +8,12 @@ const documentSchema = new mongoose.Schema(
 
 const photoSchema = new mongoose.Schema({
   name: String,
-  description: String,
-  slug: String,
   location: String,
   image: String,
 });
 
 const videoSchema = new mongoose.Schema({
   name: String,
-  description: String,
-  slug: String,
   location: String,
   thumbnail: String,
   videoUrl: String,
@@ -40,6 +36,8 @@ const projectSchema = new mongoose.Schema(
       required: true,
     },
     image: { type: String },
+    locationImage: { type: String, default: '' },
+    mapEmbed: { type: String, default: '' },
     overview: { type: String, maxlength: 50000 },
     documents: [documentSchema],
     gallery: {
@@ -56,6 +54,9 @@ const projectSchema = new mongoose.Schema(
     },
     reraNumber: { type: String, trim: true, maxlength: 50 },
     reraUrl: { type: String, trim: true, maxlength: 500 },
+    slug: { type: String, trim: true, lowercase: true },
+    metaTitle: { type: String, trim: true, maxlength: 200 },
+    metaDescription: { type: String, trim: true, maxlength: 500 },
     isFeatured: { type: Boolean, default: false },
     isActive: { type: Boolean, default: true },
   },
@@ -65,5 +66,6 @@ const projectSchema = new mongoose.Schema(
 projectSchema.index({ isActive: 1, createdAt: -1 });
 projectSchema.index({ category: 1, isActive: 1 });
 projectSchema.index({ isFeatured: 1, isActive: 1 });
+projectSchema.index({ slug: 1 });
 
 module.exports = mongoose.model('Project', projectSchema);

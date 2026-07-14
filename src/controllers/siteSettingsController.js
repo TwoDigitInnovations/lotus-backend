@@ -23,12 +23,14 @@ module.exports = {
   // Admin: update welcome section
   updateWelcome: async (req, res) => {
     try {
-      const { heading, subheading, description } = req.body;
+      const { heading, subheading, description, metaTitle, metaDescription } = req.body;
       const settings = await getSingleton();
 
       if (heading !== undefined) settings.welcome.heading = heading;
       if (subheading !== undefined) settings.welcome.subheading = subheading;
       if (description !== undefined) settings.welcome.description = description;
+      if (metaTitle !== undefined) settings.welcome.metaTitle = metaTitle;
+      if (metaDescription !== undefined) settings.welcome.metaDescription = metaDescription;
 
       if (req.files && req.files.length > 0) {
         settings.welcome.images = req.files.map((f) => f.path);
