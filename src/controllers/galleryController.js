@@ -61,11 +61,19 @@ module.exports = {
       if (!name || !type) return response.badReq(res, { message: 'Name and type are required' });
       if (type === 'video' && !videoUrl && !req.file) return response.badReq(res, { message: 'videoUrl or video file is required for video type' });
 
+      let imagePath = type === 'photo' && req.file ? req.file.path : undefined;
+      if (type === 'video' && videoUrl) {
+        const m = videoUrl.match(/(?:v=|youtu\.be\/)([^&?/]+)/);
+        if (m) {
+          imagePath = `https://img.youtube.com/vi/${m[1]}/hqdefault.jpg`;
+        }
+      }
+
       const item = await Gallery.create({
         name,
         location,
         type,
-        image: type === 'photo' && req.file ? req.file.path : undefined,
+        image: imagePath,
         videoUrl: type === 'video' ? (req.file ? req.file.path : videoUrl) : undefined,
         order: order ? parseInt(order) : 0,
         isActive: isActive !== 'false' && isActive !== false,
@@ -98,7 +106,15 @@ module.exports = {
           update.image = req.file.path;
         }
       }
-      if (videoUrl !== undefined) update.videoUrl = videoUrl;
+      if (videoUrl !== undefined) {
+        update.videoUrl = videoUrl;
+        if (currentType === 'video' && videoUrl) {
+          const m = videoUrl.match(/(?:v=|youtu\.be\/)([^&?/]+)/);
+          if (m) {
+            update.image = `https://img.youtube.com/vi/${m[1]}/hqdefault.jpg`;
+          }
+        }
+      }
       if (order !== undefined) update.order = parseInt(order);
       if (isActive !== undefined) update.isActive = isActive !== 'false' && isActive !== false;
 
